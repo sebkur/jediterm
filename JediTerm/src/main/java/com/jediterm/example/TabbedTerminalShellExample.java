@@ -1,5 +1,6 @@
 package com.jediterm.example;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.jediterm.pty.PtyProcessTtyConnector;
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.TtyConnector;
@@ -16,9 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -72,13 +74,20 @@ public class TabbedTerminalShellExample {
     frame = new JFrame("JediTerm");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-    tabbed = new JTabbedPane();
+    try {
+      UIManager.setLookAndFeel(new FlatLightLaf());
+    }
+    catch (UnsupportedLookAndFeelException e) {
+      System.out.println("Cannot set look and feel");
+    }
+
+    tabbed = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
     frame.setContentPane(tabbed);
 
     tabbed.addChangeListener(e -> {
       Component selected = tabbed.getSelectedComponent();
       if (selected != null) {
-        selected.requestFocusInWindow();
+        SwingUtilities.invokeLater(() -> selected.requestFocusInWindow());
       }
     });
 
@@ -92,6 +101,25 @@ public class TabbedTerminalShellExample {
           widget.getTtyConnector().close(); // terminate the current process
         }
       }
+    });
+
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+      if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN && e.isControlDown()) {
+        int i = tabbed.getSelectedIndex();
+        if (i < tabbed.getTabCount() - 1) {
+          tabbed.setSelectedIndex(i + 1);
+        }
+        return true;
+      }
+      else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP && e.isControlDown()) {
+        int i = tabbed.getSelectedIndex();
+        if (i > 0) {
+          tabbed.setSelectedIndex(i - 1);
+        }
+        return true;
+      }
+
+      return false;
     });
 
     frame.pack();
@@ -129,7 +157,6 @@ public class TabbedTerminalShellExample {
     widget.getTerminalPanel().addCustomKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
-        super.keyTyped(e);
         if (e.getKeyCode() == KeyEvent.VK_T && e.isControlDown()) {
           addTerminalWidget(true);
         }
