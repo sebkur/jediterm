@@ -69,7 +69,7 @@ public class TabbedTerminalShellExample {
   private List<JediTermWidget> widgets = new ArrayList<>();
 
   private void createAndShowGUI() {
-    frame = new JFrame("Basic Terminal Shell Example");
+    frame = new JFrame("JediTerm");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     tabbed = new JTabbedPane();
