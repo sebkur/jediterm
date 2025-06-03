@@ -9,8 +9,22 @@ import com.pty4j.PtyProcess;
 import com.pty4j.PtyProcessBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +74,13 @@ public class TabbedTerminalShellExample {
 
     tabbed = new JTabbedPane();
     frame.setContentPane(tabbed);
+
+    tabbed.addChangeListener(e -> {
+      Component selected = tabbed.getSelectedComponent();
+      if (selected != null) {
+        selected.requestFocusInWindow();
+      }
+    });
 
     addTerminalWidget(true);
 
@@ -116,8 +137,10 @@ public class TabbedTerminalShellExample {
     });
 
     if (focus) {
-      tabbed.setSelectedComponent(widget);
-      widget.getTerminalPanel().requestFocus();
+      SwingUtilities.invokeLater(() -> {
+        tabbed.setSelectedComponent(widget);
+        widget.getTerminalPanel().requestFocus();
+      });
     }
   }
 
