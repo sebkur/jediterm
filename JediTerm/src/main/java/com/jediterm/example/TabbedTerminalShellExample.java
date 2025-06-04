@@ -111,19 +111,21 @@ public class TabbedTerminalShellExample {
     });
 
     KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-      if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN && e.isControlDown()) {
-        int i = tabbed.getSelectedIndex();
-        if (i < tabbed.getTabCount() - 1) {
-          tabbed.setSelectedIndex(i + 1);
+      if (e.getID() == KeyEvent.KEY_PRESSED) {
+        if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN && e.isControlDown()) {
+          int i = tabbed.getSelectedIndex();
+          if (i < tabbed.getTabCount() - 1) {
+            tabbed.setSelectedIndex(i + 1);
+          }
+          return true;
         }
-        return true;
-      }
-      else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP && e.isControlDown()) {
-        int i = tabbed.getSelectedIndex();
-        if (i > 0) {
-          tabbed.setSelectedIndex(i - 1);
+        else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP && e.isControlDown()) {
+          int i = tabbed.getSelectedIndex();
+          if (i > 0) {
+            tabbed.setSelectedIndex(i - 1);
+          }
+          return true;
         }
-        return true;
       }
 
       return false;
