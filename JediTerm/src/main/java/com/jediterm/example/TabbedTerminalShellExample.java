@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntConsumer;
 
 import static com.jediterm.app.PlatformUtilKt.isWindows;
 
@@ -83,6 +84,12 @@ public class TabbedTerminalShellExample {
 
     tabbed = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
     frame.setContentPane(tabbed);
+
+    tabbed.putClientProperty("JTabbedPane.tabClosable", true);
+    tabbed.putClientProperty("JTabbedPane.tabCloseCallback",
+                             (IntConsumer) index -> {
+                               tabbed.remove(index);
+                             });
 
     tabbed.addChangeListener(e -> {
       Component selected = tabbed.getSelectedComponent();
